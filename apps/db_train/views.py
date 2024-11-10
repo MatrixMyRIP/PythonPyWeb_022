@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from django.views import View
 from .models import Author, AuthorProfile, Tag, Entry
-from django.db.models import Q, Max, Min, Avg, Count
+from django.db.models import Q, Max, Min, Avg, Count, F
 
 
 class TrainView(View):
@@ -24,9 +24,7 @@ class TrainView(View):
         # TODO Сколько авторов указали свой номер телефона?
         self.answer9 = Author.objects.filter(age__lt=25)
         # TODO Какие авторы имеют возраст младше 25 лет?
-        self.answer10 = None #Entry.objects.values('author__username').annotate(count=Count('id')), username=F('author__username')
+        self.answer10 = Entry.objects.values('author__username').annotate(count=Count('id'), username=F('author__username'))
         # TODO Сколько статей написано каждым автором?
         context = {f'answer{index}': self.__dict__[f'answer{index}'] for index in range(1, 11)}
         return render(request, 'train_db/training_db.html', context=context)
-
-    Author.objects.annotate(num_entries=Count("entries"))
